@@ -5,23 +5,18 @@
   const STORE_KEY = "basket.v1";
   const I18N = window.BASKET_I18N;
 
-  // Item ids are the English name in lower case; display names come from i18n.js.
-  const DEFAULT_CATEGORIES = [
-    { id: "food", em: "🥕", items: [
-      ["eggs", "🥚"], ["bacon", "🥓"], ["spinach", "🥬"], ["almonds", "🌰"], ["bread", "🍞"],
-      ["milk", "🥛"], ["cheese", "🧀"], ["tomatoes", "🍅"], ["bananas", "🍌"], ["apples", "🍎"],
-      ["chicken", "🍗"], ["rice", "🍚"], ["pasta", "🍝"], ["onions", "🧅"], ["avocado", "🥑"],
-    ] },
-    { id: "drinks", em: "☕", items: [
-      ["coffee", "☕"], ["tea", "🍵"], ["water", "💧"], ["juice", "🧃"], ["wine", "🍷"], ["beer", "🍺"],
-    ] },
-    { id: "home", em: "🧺", items: [
-      ["paper towels", "🧻"], ["dish soap", "🫧"], ["detergent", "🧴"], ["trash bags", "🗑️"], ["sponges", "🧽"], ["candles", "🕯️"],
-    ] },
-    { id: "care", em: "🌿", items: [
-      ["toothpaste", "🪥"], ["shampoo", "🧴"], ["soap", "🧼"], ["deodorant", "🌸"], ["tissues", "🤧"],
-    ] },
-  ].map(c => ({ ...c, items: c.items.map(([key, em]) => ({ key, em })) }));
+  // The built-in categories and items come from pantry.json (loaded at boot).
+  // Item ids are what saved lists store, so an item keeps its place on lists if its name changes.
+  let CATEGORIES = [];
+  const ITEM_NAMES = {};                          // item id -> { en, pt, ... }
+
+  function loadPantry(data) {
+    CATEGORIES = data.categories.map(c => ({
+      id: c.id, em: c.emoji, names: c.name,
+      items: c.items.map(it => ({ key: it.id, em: it.emoji })),
+    }));
+    data.categories.forEach(c => c.items.forEach(it => { ITEM_NAMES[it.id] = it.name; }));
+  }
 
   // A list with no name shows the translated "My list".
   const blankList = () => ({ id: null, name: null, items: [] });
@@ -60,8 +55,10 @@
   }
   const plural = (key, n) => t(`${key}_${n === 1 ? "one" : "other"}`, { n });
   const locale = () => (I18N.LANGS.find(l => l.id === db.lang) || I18N.LANGS[0]).locale;
-  const itemName = it => I18N.ITEMS[it.key]?.[db.lang] ?? it.name;
-  const catName = cat => I18N.CATEGORIES[cat.id][db.lang];
+  // Missing translations fall back to English, then to the name saved with the item.
+  const pick = names => names && (names[db.lang] ?? names.en);
+  const itemName = it => pick(ITEM_NAMES[it.key]) ?? it.name;
+  const catName = cat => pick(cat.names) ?? cat.id;
   const listName = l => l.name || t("myList");
 
   function applyStaticText() {
@@ -93,7 +90,7 @@
   let editing = false;
 
   function renderPantry() {
-    catsEl.innerHTML = DEFAULT_CATEGORIES.map(cat => {
+    catsEl.innerHTML = CATEGORIES.map(cat => {
       const custom = db.custom[cat.id] || [];
       const chips = [
         ...cat.items.map(it => chipHtml(cat, it.key, itemName(it), it.em, false)),
@@ -135,7 +132,7 @@
   });
 
   function startAddChip(addBtn) {
-    const cat = DEFAULT_CATEGORIES.find(c => c.id === addBtn.dataset.add);
+    const cat = CATEGORIES.find(c => c.id === addBtn.dataset.add);
     const input = document.createElement("input");
     input.className = "chip-input";
     input.placeholder = t("newItem");
@@ -149,7 +146,7 @@
       if (save && name) {
         const k = keyOf(name);
         // Skip duplicates of a built-in item (in any language) or of an item added before.
-        const exists = cat.items.some(i => i.key === k || Object.values(I18N.ITEMS[i.key]).some(n => keyOf(n) === k))
+        const exists = cat.items.some(i => i.key === k || Object.values(ITEM_NAMES[i.key]).some(n => keyOf(n) === k))
           || (db.custom[cat.id] || []).some(i => keyOf(i.name) === k);
         if (!exists) (db.custom[cat.id] ||= []).push({ name: name[0].toUpperCase() + name.slice(1), em: cat.em });
         persist();
@@ -539,9 +536,11 @@
 
   /* ---------------- Boot ---------------- */
   applyStaticText();
-  renderPantry();
-  renderList();
-  persist();
+  fetch("pantry.json")
+    .then(r => r.json())
+    .then(loadPantry)
+    .catch(err => console.error("Could not load pantry.json", err))
+    .finally(() => { renderPantry(); renderList(); persist(); });
 
   // The Android app already has every file on the device, so only the web version needs the offline cache.
   if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !window.Capacitor) {

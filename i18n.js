@@ -1,4 +1,5 @@
-// Translations. Add a language by adding a block to each table below (and an entry in LANGS).
+// Interface text in each language. Add a language by adding an entry to LANGS and a block to STRINGS
+// (plus its names in pantry.json).
 window.BASKET_I18N = {
   LANGS: [
     { id: "en", label: "English", locale: "en-GB" },
@@ -42,49 +43,5 @@ window.BASKET_I18N = {
       today: "hoje, {time}", yesterday: "ontem, {time}",
       language: "Idioma",
     },
-  },
-
-  CATEGORIES: {
-    food:   { en: "Food", pt: "Comida" },
-    drinks: { en: "Drinks", pt: "Bebidas" },
-    home:   { en: "Home", pt: "Casa" },
-    care:   { en: "Personal care", pt: "Higiene pessoal" },
-  },
-
-  // Keys are the item ids used in saved lists (the English name in lower case), so lists made before
-  // translations existed keep working and switch language too.
-  ITEMS: {
-    "eggs": { en: "Eggs", pt: "Ovos" },
-    "bacon": { en: "Bacon", pt: "Bacon" },
-    "spinach": { en: "Spinach", pt: "Espinafres" },
-    "almonds": { en: "Almonds", pt: "Amêndoas" },
-    "bread": { en: "Bread", pt: "Pão" },
-    "milk": { en: "Milk", pt: "Leite" },
-    "cheese": { en: "Cheese", pt: "Queijo" },
-    "tomatoes": { en: "Tomatoes", pt: "Tomates" },
-    "bananas": { en: "Bananas", pt: "Bananas" },
-    "apples": { en: "Apples", pt: "Maçãs" },
-    "chicken": { en: "Chicken", pt: "Frango" },
-    "rice": { en: "Rice", pt: "Arroz" },
-    "pasta": { en: "Pasta", pt: "Massa" },
-    "onions": { en: "Onions", pt: "Cebolas" },
-    "avocado": { en: "Avocado", pt: "Abacate" },
-    "coffee": { en: "Coffee", pt: "Café" },
-    "tea": { en: "Tea", pt: "Chá" },
-    "water": { en: "Water", pt: "Água" },
-    "juice": { en: "Juice", pt: "Sumo" },
-    "wine": { en: "Wine", pt: "Vinho" },
-    "beer": { en: "Beer", pt: "Cerveja" },
-    "paper towels": { en: "Paper towels", pt: "Rolo de cozinha" },
-    "dish soap": { en: "Dish soap", pt: "Detergente da loiça" },
-    "detergent": { en: "Detergent", pt: "Detergente da roupa" },
-    "trash bags": { en: "Trash bags", pt: "Sacos do lixo" },
-    "sponges": { en: "Sponges", pt: "Esponjas" },
-    "candles": { en: "Candles", pt: "Velas" },
-    "toothpaste": { en: "Toothpaste", pt: "Pasta de dentes" },
-    "shampoo": { en: "Shampoo", pt: "Champô" },
-    "soap": { en: "Soap", pt: "Sabonete" },
-    "deodorant": { en: "Deodorant", pt: "Desodorizante" },
-    "tissues": { en: "Tissues", pt: "Lenços de papel" },
   },
 };

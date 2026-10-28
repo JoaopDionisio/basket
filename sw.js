@@ -1,7 +1,7 @@
 // Offline support: every app file, fonts included, is cached on install.
-const CACHE = "basket-v3";
+const CACHE = "basket-v4";
 const SHELL = [
-  "./", "index.html", "styles.css", "i18n.js", "app.js", "manifest.webmanifest",
+  "./", "index.html", "styles.css", "i18n.js", "pantry.json", "app.js", "manifest.webmanifest",
   "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png",
   "fonts/fonts.css", "fonts/f0.woff2", "fonts/f1.woff2", "fonts/f2.woff2", "fonts/f3.woff2", "fonts/f4.woff2", "fonts/f5.woff2",
 ];

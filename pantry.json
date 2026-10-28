@@ -1,0 +1,64 @@
+{
+  "categories": [
+    {
+      "id": "food",
+      "emoji": "🥕",
+      "name": { "en": "Food", "pt": "Comida" },
+      "items": [
+        { "id": "eggs", "emoji": "🥚", "name": { "en": "Eggs", "pt": "Ovos" } },
+        { "id": "bacon", "emoji": "🥓", "name": { "en": "Bacon", "pt": "Bacon" } },
+        { "id": "spinach", "emoji": "🥬", "name": { "en": "Spinach", "pt": "Espinafres" } },
+        { "id": "almonds", "emoji": "🌰", "name": { "en": "Almonds", "pt": "Amêndoas" } },
+        { "id": "bread", "emoji": "🍞", "name": { "en": "Bread", "pt": "Pão" } },
+        { "id": "milk", "emoji": "🥛", "name": { "en": "Milk", "pt": "Leite" } },
+        { "id": "cheese", "emoji": "🧀", "name": { "en": "Cheese", "pt": "Queijo" } },
+        { "id": "tomatoes", "emoji": "🍅", "name": { "en": "Tomatoes", "pt": "Tomates" } },
+        { "id": "bananas", "emoji": "🍌", "name": { "en": "Bananas", "pt": "Bananas" } },
+        { "id": "apples", "emoji": "🍎", "name": { "en": "Apples", "pt": "Maçãs" } },
+        { "id": "chicken", "emoji": "🍗", "name": { "en": "Chicken", "pt": "Frango" } },
+        { "id": "rice", "emoji": "🍚", "name": { "en": "Rice", "pt": "Arroz" } },
+        { "id": "pasta", "emoji": "🍝", "name": { "en": "Pasta", "pt": "Massa" } },
+        { "id": "onions", "emoji": "🧅", "name": { "en": "Onions", "pt": "Cebolas" } },
+        { "id": "avocado", "emoji": "🥑", "name": { "en": "Avocado", "pt": "Abacate" } }
+      ]
+    },
+    {
+      "id": "drinks",
+      "emoji": "☕",
+      "name": { "en": "Drinks", "pt": "Bebidas" },
+      "items": [
+        { "id": "coffee", "emoji": "☕", "name": { "en": "Coffee", "pt": "Café" } },
+        { "id": "tea", "emoji": "🍵", "name": { "en": "Tea", "pt": "Chá" } },
+        { "id": "water", "emoji": "💧", "name": { "en": "Water", "pt": "Água" } },
+        { "id": "juice", "emoji": "🧃", "name": { "en": "Juice", "pt": "Sumo" } },
+        { "id": "wine", "emoji": "🍷", "name": { "en": "Wine", "pt": "Vinho" } },
+        { "id": "beer", "emoji": "🍺", "name": { "en": "Beer", "pt": "Cerveja" } }
+      ]
+    },
+    {
+      "id": "home",
+      "emoji": "🧺",
+      "name": { "en": "Home", "pt": "Casa" },
+      "items": [
+        { "id": "paper towels", "emoji": "🧻", "name": { "en": "Paper towels", "pt": "Rolo de cozinha" } },
+        { "id": "dish soap", "emoji": "🫧", "name": { "en": "Dish soap", "pt": "Detergente da loiça" } },
+        { "id": "detergent", "emoji": "🧴", "name": { "en": "Detergent", "pt": "Detergente da roupa" } },
+        { "id": "trash bags", "emoji": "🗑️", "name": { "en": "Trash bags", "pt": "Sacos do lixo" } },
+        { "id": "sponges", "emoji": "🧽", "name": { "en": "Sponges", "pt": "Esponjas" } },
+        { "id": "candles", "emoji": "🕯️", "name": { "en": "Candles", "pt": "Velas" } }
+      ]
+    },
+    {
+      "id": "care",
+      "emoji": "🌿",
+      "name": { "en": "Personal care", "pt": "Higiene pessoal" },
+      "items": [
+        { "id": "toothpaste", "emoji": "🪥", "name": { "en": "Toothpaste", "pt": "Pasta de dentes" } },
+        { "id": "shampoo", "emoji": "🧴", "name": { "en": "Shampoo", "pt": "Champô" } },
+        { "id": "soap", "emoji": "🧼", "name": { "en": "Soap", "pt": "Sabonete" } },
+        { "id": "deodorant", "emoji": "🌸", "name": { "en": "Deodorant", "pt": "Desodorizante" } },
+        { "id": "tissues", "emoji": "🤧", "name": { "en": "Tissues", "pt": "Lenços de papel" } }
+      ]
+    }
+  ]
+}
