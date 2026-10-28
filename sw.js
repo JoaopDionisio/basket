@@ -1,6 +1,10 @@
-// Offline support: app files are cached on install, fonts are cached the first time they load.
-const CACHE = "basket-v1";
-const SHELL = ["./", "index.html", "styles.css", "app.js", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png"];
+// Offline support: every app file, fonts included, is cached on install.
+const CACHE = "basket-v2";
+const SHELL = [
+  "./", "index.html", "styles.css", "app.js", "manifest.webmanifest",
+  "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png",
+  "fonts/fonts.css", "fonts/f0.woff2", "fonts/f1.woff2", "fonts/f2.woff2", "fonts/f3.woff2", "fonts/f4.woff2", "fonts/f5.woff2",
+];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

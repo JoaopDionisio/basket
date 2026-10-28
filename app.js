@@ -477,7 +477,8 @@
   renderList();
   persist();
 
-  if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  // The Android app already has every file on the device, so only the web version needs the offline cache.
+  if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !window.Capacitor) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
   }
 })();

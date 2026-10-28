@@ -1,0 +1,9 @@
+{
+  "appId": "io.github.joaopdionisio.basket",
+  "appName": "Basket",
+  "webDir": "www",
+  "backgroundColor": "#f4ece0",
+  "android": {
+    "allowMixedContent": false
+  }
+}

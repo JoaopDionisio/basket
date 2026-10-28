@@ -1,2 +1,5 @@
 .playwright-mcp/
 .claude/
+node_modules/
+www/
+*.apk
