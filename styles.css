@@ -125,10 +125,7 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
   transition: transform .15s ease, opacity .2s, border-color .2s;
 }
 .chip:active { transform: scale(.96); }
-.chip.picked { opacity: .35; transform: scale(.94); }
-.chip.nudge { animation: nudge .45s ease; }
-@keyframes nudge { 30% { transform: translateX(7px); } 60% { transform: translateX(-2px); } }
-.chip .em { font-size: .95rem; }
+.chip.picked { opacity: .35; transform: scale(.94); }.chip .em { font-size: .95rem; }
 .chip-add {
   background: transparent; border-style: dashed; box-shadow: none; color: var(--ink-soft);
   padding: 7px 11px;

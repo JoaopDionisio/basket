@@ -171,9 +171,9 @@
     if (!drag || e.pointerId !== drag.pointerId) return;
     const d = drag;
     clearTimeout(d.timer);
-    if (!d.active) {                               // simple tap → remind that items are dragged
+    if (!d.active) {                               // simple tap → add
       drag = null;
-      nudge(d.chip);
+      addFromChip(d.chip, true);
       return;
     }
     if (overBoard()) {
@@ -243,12 +243,6 @@
     ghost.classList.add("fly");
     requestAnimationFrame(() => { ghost.style.transform = `translate(${r.left}px, ${r.top}px)`; });
     setTimeout(() => ghost.remove(), 460);
-  }
-
-  let nudgeHinted = false;
-  function nudge(chip) {
-    chip.classList.remove("nudge"); void chip.offsetWidth; chip.classList.add("nudge");
-    if (!nudgeHinted) { nudgeHinted = true; toast("Drag it into your list →"); }
   }
 
   function addFromChip(chip, animate) {

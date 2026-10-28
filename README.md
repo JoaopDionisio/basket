@@ -37,7 +37,7 @@ The APK lands in `android/app/build/outputs/apk/debug/app-debug.apk`. Copy it to
 
 ## How it works
 
-- **Pantry** (left): drag a chip onto the list to add it. On touch, swipe it sideways toward the list (or press and hold, then drag in any direction); swiping up/down scrolls the pantry. `+ Add` creates your own items; the pencil lets you remove them.
+- **Pantry** (left): tap a chip to add it, or drag it onto the list. On touch, swipe it sideways toward the list (or press and hold, then drag in any direction); swiping up/down scrolls the pantry. `+ Add` creates your own items; the pencil lets you remove them.
 - **List** (right): tap an item to tick it off, tap `×2` to lower the quantity, `×` to remove. Tap the title to rename.
 - **Save** stores the list; the last saved list opens automatically next time. Unsaved changes show a yellow dot and are kept even if the app is closed.
 - **Clear** empties the items but keeps the list. **Delete** removes the saved list. **Load** opens another saved list or starts a new one.
