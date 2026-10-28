@@ -77,13 +77,15 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
 }
 .pantry-head {
   display: flex; align-items: center; justify-content: space-between;
-  padding: calc(18px + var(--safe-t)) 12px 8px 16px;
+  gap: 4px;
+  padding: calc(18px + var(--safe-t)) 8px 8px 14px;
 }
 .pantry-title {
-  font-family: var(--font-display); font-style: italic; font-size: 1.25rem; color: var(--ink-soft);
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: var(--font-display); font-style: italic; font-size: 1.2rem; color: var(--ink-soft);
 }
 .icon-btn {
-  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-soft);
+  flex: none; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-soft);
   transition: background .2s, color .2s;
 }
 .icon-btn svg { width: 18px; height: 18px; }
@@ -145,15 +147,17 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
 
 /* ---------- Board (right) ---------- */
 .board { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
-.board-head { padding: calc(22px + var(--safe-t)) 18px 6px; text-align: center; }
+.board-head { position: relative; padding: calc(22px + var(--safe-t)) 40px 6px; text-align: center; }
+.settings-btn { position: absolute; top: calc(12px + var(--safe-t)); right: 8px; }
 .list-title {
   display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
-  font-family: var(--font-display); font-weight: 700; font-size: clamp(1.6rem, 6vw, 2.3rem);
-  letter-spacing: .04em; line-height: 1.1;
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(1.45rem, 6vw, 2.3rem);
+  letter-spacing: .03em; line-height: 1.15;
 }
-.list-title span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .list-title span:first-child {
-  /* hand-drawn underline */
+  /* long names wrap onto a second line (each line keeps its hand-drawn underline) */
+  overflow-wrap: anywhere; text-wrap: balance;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
   padding-bottom: 6px;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'%3E%3Cpath d='M2 6c40-5 80 3 120-1s60 2 76-2' fill='none' stroke='%23d8734a' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") bottom / 100% 8px no-repeat;
 }
@@ -206,7 +210,7 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
 .empty svg { width: 110px; height: 92px; stroke-width: 3; opacity: .55; }
 .empty .basket-body { fill: var(--paper-2); }
 .empty p { margin: 6px 0 0; font-family: var(--font-display); font-style: italic; font-size: 1.1rem; color: var(--ink); opacity: .75; }
-.empty p span { font-family: var(--font-body); font-style: normal; font-size: .8rem; color: var(--ink-soft); }
+.empty p span:not(.empty-title) { font-family: var(--font-body); font-style: normal; font-size: .8rem; color: var(--ink-soft); }
 .has-items .empty { opacity: 0; }
 
 .drop-glow {
@@ -295,6 +299,8 @@ body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbin
 .saved .info { flex: 1; min-width: 0; }
 .saved .name { display: block; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .saved .when { display: block; font-size: .78rem; color: var(--ink-soft); margin-top: 2px; }
+.choice .tick { flex: none; color: var(--accent); display: grid; place-items: center; }
+.choice .tick svg { width: 20px; height: 20px; stroke-width: 3; }
 .saved-empty { color: var(--ink-soft); text-align: center; padding: 18px 0; font-style: italic; }
 .new-list { margin-top: 12px; width: 100%; }
 

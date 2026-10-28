@@ -3,35 +3,40 @@
 
   /* ---------------- Data ---------------- */
   const STORE_KEY = "basket.v1";
+  const I18N = window.BASKET_I18N;
 
+  // Item ids are the English name in lower case; display names come from i18n.js.
   const DEFAULT_CATEGORIES = [
-    { id: "food", name: "Food", em: "🥕", items: [
-      ["Eggs", "🥚"], ["Bacon", "🥓"], ["Spinach", "🥬"], ["Almonds", "🌰"], ["Bread", "🍞"],
-      ["Milk", "🥛"], ["Cheese", "🧀"], ["Tomatoes", "🍅"], ["Bananas", "🍌"], ["Apples", "🍎"],
-      ["Chicken", "🍗"], ["Rice", "🍚"], ["Pasta", "🍝"], ["Onions", "🧅"], ["Avocado", "🥑"],
+    { id: "food", em: "🥕", items: [
+      ["eggs", "🥚"], ["bacon", "🥓"], ["spinach", "🥬"], ["almonds", "🌰"], ["bread", "🍞"],
+      ["milk", "🥛"], ["cheese", "🧀"], ["tomatoes", "🍅"], ["bananas", "🍌"], ["apples", "🍎"],
+      ["chicken", "🍗"], ["rice", "🍚"], ["pasta", "🍝"], ["onions", "🧅"], ["avocado", "🥑"],
     ] },
-    { id: "drinks", name: "Drinks", em: "☕", items: [
-      ["Coffee", "☕"], ["Tea", "🍵"], ["Water", "💧"], ["Juice", "🧃"], ["Wine", "🍷"], ["Beer", "🍺"],
+    { id: "drinks", em: "☕", items: [
+      ["coffee", "☕"], ["tea", "🍵"], ["water", "💧"], ["juice", "🧃"], ["wine", "🍷"], ["beer", "🍺"],
     ] },
-    { id: "home", name: "Home", em: "🧺", items: [
-      ["Paper towels", "🧻"], ["Dish soap", "🫧"], ["Detergent", "🧴"], ["Trash bags", "🗑️"], ["Sponges", "🧽"], ["Candles", "🕯️"],
+    { id: "home", em: "🧺", items: [
+      ["paper towels", "🧻"], ["dish soap", "🫧"], ["detergent", "🧴"], ["trash bags", "🗑️"], ["sponges", "🧽"], ["candles", "🕯️"],
     ] },
-    { id: "care", name: "Personal care", em: "🌿", items: [
-      ["Toothpaste", "🪥"], ["Shampoo", "🧴"], ["Soap", "🧼"], ["Deodorant", "🌸"], ["Tissues", "🤧"],
+    { id: "care", em: "🌿", items: [
+      ["toothpaste", "🪥"], ["shampoo", "🧴"], ["soap", "🧼"], ["deodorant", "🌸"], ["tissues", "🤧"],
     ] },
-  ].map(c => ({ ...c, items: c.items.map(([name, em]) => ({ name, em })) }));
+  ].map(c => ({ ...c, items: c.items.map(([key, em]) => ({ key, em })) }));
 
-  const blankList = () => ({ id: null, name: "My list", items: [] });
+  // A list with no name shows the translated "My list".
+  const blankList = () => ({ id: null, name: null, items: [] });
 
   let db = loadDb();
   let current = db.draft ? db.draft.list : null;
   let dirty = db.draft ? db.draft.dirty : false;
   if (!current) current = db.lastId && db.saved[db.lastId] ? clone(db.saved[db.lastId]) : blankList();
+  if (current.name === "My list") current.name = null;    // lists from before translations existed
 
   function loadDb() {
     let raw = null;
     try { raw = JSON.parse(localStorage.getItem(STORE_KEY)); } catch (_) {}
     return {
+      lang: (navigator.language || "").toLowerCase().startsWith("pt") ? "pt" : "en",
       custom: {},        // categoryId -> [{name, em}]
       collapsed: {},     // categoryId -> bool
       saved: {},         // listId -> {id, name, items, updatedAt}
@@ -47,6 +52,29 @@
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   const keyOf = name => name.trim().toLowerCase();
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+  /* ---------------- Language ---------------- */
+  function t(key, vars) {
+    const s = (I18N.STRINGS[db.lang] || I18N.STRINGS.en)[key] ?? I18N.STRINGS.en[key] ?? key;
+    return vars ? s.replace(/\{(\w+)\}/g, (_, k) => vars[k]) : s;
+  }
+  const plural = (key, n) => t(`${key}_${n === 1 ? "one" : "other"}`, { n });
+  const locale = () => (I18N.LANGS.find(l => l.id === db.lang) || I18N.LANGS[0]).locale;
+  const itemName = it => I18N.ITEMS[it.key]?.[db.lang] ?? it.name;
+  const catName = cat => I18N.CATEGORIES[cat.id][db.lang];
+  const listName = l => l.name || t("myList");
+
+  function applyStaticText() {
+    document.documentElement.lang = locale();
+    document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
+    document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  }
+  function setLang(lang) {
+    db.lang = lang;
+    persist();
+    applyStaticText(); renderPantry(); renderList();
+  }
 
   /* ---------------- Elements ---------------- */
   const $ = s => document.querySelector(s);
@@ -68,21 +96,21 @@
     catsEl.innerHTML = DEFAULT_CATEGORIES.map(cat => {
       const custom = db.custom[cat.id] || [];
       const chips = [
-        ...cat.items.map(it => chipHtml(cat, it, false)),
-        ...custom.map(it => chipHtml(cat, it, true)),
-        `<button class="chip chip-add" data-add="${cat.id}">+ Add</button>`,
+        ...cat.items.map(it => chipHtml(cat, it.key, itemName(it), it.em, false)),
+        ...custom.map(it => chipHtml(cat, keyOf(it.name), it.name, it.em, true)),
+        `<button class="chip chip-add" data-add="${cat.id}">${t("add")}</button>`,
       ].join("");
       return `<section class="cat ${db.collapsed[cat.id] ? "collapsed" : ""}" data-cat="${cat.id}">
         <button class="cat-head" data-toggle="${cat.id}" aria-expanded="${!db.collapsed[cat.id]}">
-          <span class="cat-emoji">${cat.em}</span>${esc(cat.name)}${ICON_CHEV}
+          <span class="cat-emoji">${cat.em}</span>${esc(catName(cat))}${ICON_CHEV}
         </button>
         <div class="cat-body"><div class="cat-chips">${chips}</div></div>
       </section>`;
     }).join("");
   }
-  function chipHtml(cat, it, custom) {
-    return `<button class="chip ${custom ? "custom" : ""}" data-cat="${cat.id}" data-name="${esc(it.name)}" data-em="${it.em}">
-      <span class="em">${it.em}</span>${esc(it.name)}${custom ? '<span class="x">×</span>' : ""}
+  function chipHtml(cat, key, name, em, custom) {
+    return `<button class="chip ${custom ? "custom" : ""}" data-cat="${cat.id}" data-key="${esc(key)}" data-name="${esc(name)}" data-em="${em}">
+      <span class="em">${em}</span>${esc(name)}${custom ? '<span class="x">×</span>' : ""}
     </button>`;
   }
 
@@ -101,7 +129,7 @@
     const chip = e.target.closest(".chip.custom");
     if (chip && editing) {
       const list = db.custom[chip.dataset.cat] || [];
-      db.custom[chip.dataset.cat] = list.filter(i => keyOf(i.name) !== keyOf(chip.dataset.name));
+      db.custom[chip.dataset.cat] = list.filter(i => keyOf(i.name) !== chip.dataset.key);
       persist(); renderPantry();
     }
   });
@@ -110,7 +138,7 @@
     const cat = DEFAULT_CATEGORIES.find(c => c.id === addBtn.dataset.add);
     const input = document.createElement("input");
     input.className = "chip-input";
-    input.placeholder = `New ${cat.name.toLowerCase()} item…`;
+    input.placeholder = t("newItem");
     input.enterKeyHint = "done";
     addBtn.replaceWith(input);
     input.focus();
@@ -119,7 +147,10 @@
       if (finished) return; finished = true;
       const name = input.value.trim();
       if (save && name) {
-        const exists = [...cat.items, ...(db.custom[cat.id] || [])].some(i => keyOf(i.name) === keyOf(name));
+        const k = keyOf(name);
+        // Skip duplicates of a built-in item (in any language) or of an item added before.
+        const exists = cat.items.some(i => i.key === k || Object.values(I18N.ITEMS[i.key]).some(n => keyOf(n) === k))
+          || (db.custom[cat.id] || []).some(i => keyOf(i.name) === k);
         if (!exists) (db.custom[cat.id] ||= []).push({ name: name[0].toUpperCase() + name.slice(1), em: cat.em });
         persist();
       }
@@ -136,7 +167,7 @@
     editing = !editing;
     pantry.classList.toggle("editing", editing);
     e.currentTarget.setAttribute("aria-pressed", editing);
-    if (editing) toast("Tap a custom item to remove it");
+    if (editing) toast(t("editHint"));
   });
 
   /* ---------------- Drag & drop (pointer events: works with mouse + touch) ---------------- */
@@ -256,9 +287,9 @@
   }
 
   function addFromChip(chip, animate) {
-    const name = chip.dataset.name, em = chip.dataset.em;
+    const { key, name, em } = chip.dataset;
     let start = animate ? chip.getBoundingClientRect() : null;
-    const el = addItem(name, em);
+    const el = addItem(key, name, em);
     if (start && el) {                              // tap: a little flying copy
       const g = chip.cloneNode(true);
       g.classList.add("ghost", "fly");
@@ -271,8 +302,7 @@
   }
 
   /* ---------------- List ---------------- */
-  function addItem(name, em) {
-    const key = keyOf(name);
+  function addItem(key, name, em) {
     let item = current.items.find(i => i.key === key);
     if (item) { item.qty += 1; item.done = false; }
     else { item = { key, name, em, qty: 1, done: false }; current.items.push(item); }
@@ -285,11 +315,11 @@
   }
 
   function renderList(bumpKey) {
-    listNameEl.textContent = current.name;
+    listNameEl.textContent = listName(current);
     titleBtn.classList.toggle("dirty", dirty);
     const n = current.items.length, left = current.items.filter(i => !i.done).length;
-    listMetaEl.textContent = n === 0 ? (current.id ? "Saved list · empty" : "Not saved yet")
-      : `${left} to buy${n - left ? ` · ${n - left} in the basket` : ""}`;
+    listMetaEl.textContent = n === 0 ? t(current.id ? "savedEmpty" : "notSaved")
+      : t("toBuy", { n: left }) + (n - left ? t("inBasket", { n: n - left }) : "");
     board.classList.toggle("has-items", n > 0);
     btnDelete.disabled = !current.id;
 
@@ -301,13 +331,15 @@
         li = document.createElement("li");
         li.className = "item";
         li.dataset.key = it.key;
-        li.innerHTML = `<button class="check" aria-label="Mark as bought">${ICON_CHECK}</button>
+        li.innerHTML = `<button class="check">${ICON_CHECK}</button>
           <span class="item-name"></span><span class="qty"></span>
-          <button class="remove" aria-label="Remove">${ICON_X}</button>`;
+          <button class="remove">${ICON_X}</button>`;
       }
       existing.delete(it.key);
       li.classList.toggle("done", it.done);
-      li.querySelector(".item-name").innerHTML = `<span class="em">${it.em}</span>${esc(it.name)}`;
+      li.querySelector(".check").setAttribute("aria-label", t("markBought"));
+      li.querySelector(".remove").setAttribute("aria-label", t("remove"));
+      li.querySelector(".item-name").innerHTML = `<span class="em">${it.em}</span>${esc(itemName(it))}`;
       const q = li.querySelector(".qty");
       q.textContent = "×" + it.qty;
       q.hidden = it.qty < 2;
@@ -330,7 +362,7 @@
       li.classList.add("leaving");
       markDirty();
       setTimeout(() => renderList(), 220);
-      toast(`Removed ${removed.name}`, "Undo", () => {
+      toast(t("removed", { name: itemName(removed) }), t("undo"), () => {
         current.items.splice(Math.min(idx, current.items.length), 0, removed);
         markDirty(); renderList();
       });
@@ -351,16 +383,16 @@
 
   /* ---------------- Actions ---------------- */
   $("#btnClear").addEventListener("click", () => {
-    if (!current.items.length) return toast("Already empty");
+    if (!current.items.length) return toast(t("alreadyEmpty"));
     const backup = current.items;
     current.items = [];
     markDirty(); renderList();
-    toast("List cleared", "Undo", () => { current.items = backup; markDirty(); renderList(); });
+    toast(t("cleared"), t("undo"), () => { current.items = backup; markDirty(); renderList(); });
   });
 
   $("#btnSave").addEventListener("click", () => {
     if (current.id) return saveCurrent();
-    askName("Save list", "Give it a name so you can find it later.", current.name === "My list" ? "" : current.name, "Save", name => {
+    askName(t("saveTitle"), t("saveSub"), current.name || "", t("save"), name => {
       current.name = name;
       current.id = uid();
       saveCurrent();
@@ -371,22 +403,22 @@
     db.saved[current.id] = { ...clone(current), updatedAt: Date.now() };
     db.lastId = current.id;
     setClean(); renderList();
-    toast(`Saved “${current.name}” ✓`);
+    toast(t("savedToast", { name: listName(current) }));
   }
 
   $("#btnLoad").addEventListener("click", () => {
     const lists = Object.values(db.saved).sort((a, b) => b.updatedAt - a.updatedAt);
     openSheet(`
-      <h2>Your lists</h2>
-      <p class="sub">Pick one to open.</p>
+      <h2>${t("yourLists")}</h2>
+      <p class="sub">${t("pickOne")}</p>
       ${lists.length ? `<ul class="saved-list">${lists.map(l => `
         <li><button class="saved ${l.id === current.id ? "current" : ""}" data-load="${l.id}">
-          <span class="badge">${esc(l.name.trim()[0] || "•").toUpperCase()}</span>
-          <span class="info"><span class="name">${esc(l.name)}</span>
-          <span class="when">${l.items.length} item${l.items.length === 1 ? "" : "s"} · ${when(l.updatedAt)}</span></span>
+          <span class="badge">${esc(listName(l).trim()[0] || "•").toUpperCase()}</span>
+          <span class="info"><span class="name">${esc(listName(l))}</span>
+          <span class="when">${plural("items", l.items.length)} · ${when(l.updatedAt)}</span></span>
         </button></li>`).join("")}</ul>`
-        : `<p class="saved-empty">No saved lists yet.</p>`}
-      <button class="btn new-list" data-new>+ Start a new list</button>
+        : `<p class="saved-empty">${t("noLists")}</p>`}
+      <button class="btn new-list" data-new>${t("newList")}</button>
     `);
     sheetBody.onclick = e => {
       const b = e.target.closest("[data-load]");
@@ -395,7 +427,7 @@
         delete current.updatedAt;
         db.lastId = current.id;
         setClean(); renderList(); closeSheet();
-        toast(`Opened “${current.name}”`);
+        toast(t("opened", { name: listName(current) }));
       }
       if (e.target.closest("[data-new]")) {
         current = blankList();
@@ -407,39 +439,57 @@
   btnDelete.addEventListener("click", () => {
     if (!current.id) return;
     openSheet(`
-      <h2>Delete “${esc(current.name)}”?</h2>
-      <p class="sub">This removes the saved list for good.</p>
+      <h2>${esc(t("deleteTitle", { name: listName(current) }))}</h2>
+      <p class="sub">${t("deleteSub")}</p>
       <div class="sheet-row">
-        <button class="btn" data-cancel>Keep it</button>
-        <button class="btn btn-danger" data-confirm>Delete</button>
+        <button class="btn" data-cancel>${t("keep")}</button>
+        <button class="btn btn-danger" data-confirm>${t("delete")}</button>
       </div>`);
     sheetBody.onclick = e => {
       if (e.target.closest("[data-cancel]")) closeSheet();
       if (e.target.closest("[data-confirm]")) {
-        const name = current.name;
+        const name = listName(current);
         delete db.saved[current.id];
         if (db.lastId === current.id) db.lastId = null;
         current = blankList();
         setClean(); renderList(); closeSheet();
-        toast(`Deleted “${name}”`);
+        toast(t("deleted", { name }));
       }
     };
   });
 
   titleBtn.addEventListener("click", () => {
-    askName("Rename list", "", current.name, "Done", name => {
+    askName(t("renameList"), "", current.name || "", t("done"), name => {
       current.name = name;
       markDirty(); renderList();
     });
   });
 
+  $("#settingsBtn").addEventListener("click", openSettings);
+  function openSettings() {
+    openSheet(`
+      <h2>${t("settings")}</h2>
+      <p class="sub">${t("language")}</p>
+      <ul class="saved-list">${I18N.LANGS.map(l => `
+        <li><button class="saved choice ${l.id === db.lang ? "current" : ""}" data-lang="${l.id}" aria-pressed="${l.id === db.lang}">
+          <span class="badge">${l.id.toUpperCase()}</span>
+          <span class="info"><span class="name">${l.label}</span></span>
+          ${l.id === db.lang ? `<span class="tick">${ICON_CHECK}</span>` : ""}
+        </button></li>`).join("")}</ul>
+    `);
+    sheetBody.onclick = e => {
+      const b = e.target.closest("[data-lang]");
+      if (b && b.dataset.lang !== db.lang) { setLang(b.dataset.lang); openSettings(); }
+    };
+  }
+
   function when(ts) {
     const d = new Date(ts), today = new Date();
     const days = Math.round((new Date(today.toDateString()) - new Date(d.toDateString())) / 864e5);
-    const time = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    if (days === 0) return `today, ${time}`;
-    if (days === 1) return `yesterday, ${time}`;
-    return d.toLocaleDateString([], { day: "numeric", month: "short" });
+    const time = d.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit" });
+    if (days === 0) return t("today", { time });
+    if (days === 1) return t("yesterday", { time });
+    return d.toLocaleDateString(locale(), { day: "numeric", month: "short" });
   }
 
   /* ---------------- Sheet & toast ---------------- */
@@ -459,9 +509,9 @@
     openSheet(`
       <h2>${title}</h2>${sub ? `<p class="sub">${sub}</p>` : ""}
       <form data-form>
-        <input type="text" maxlength="40" placeholder="e.g. Weekly groceries" value="${esc(value)}" enterkeyhint="done" />
+        <input type="text" maxlength="40" placeholder="${esc(t("placeholder"))}" value="${esc(value)}" enterkeyhint="done" />
         <div class="sheet-row">
-          <button type="button" class="btn" data-cancel>Cancel</button>
+          <button type="button" class="btn" data-cancel>${t("cancel")}</button>
           <button type="submit" class="btn btn-primary">${cta}</button>
         </div>
       </form>`);
@@ -488,6 +538,7 @@
   }
 
   /* ---------------- Boot ---------------- */
+  applyStaticText();
   renderPantry();
   renderList();
   persist();

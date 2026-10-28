@@ -2,7 +2,7 @@
 // The source files stay in the project root so GitHub Pages can serve them as-is.
 import { cp, rm, mkdir } from "node:fs/promises";
 
-const FILES = ["index.html", "styles.css", "app.js", "manifest.webmanifest", "icons", "fonts"];
+const FILES = ["index.html", "styles.css", "i18n.js", "app.js", "manifest.webmanifest", "icons", "fonts"];
 
 await rm("www", { recursive: true, force: true });
 await mkdir("www");

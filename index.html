@@ -18,23 +18,26 @@
 <body>
   <div class="app">
     <!-- Inventory (left) -->
-    <aside class="pantry" id="pantry" aria-label="Inventory">
+    <aside class="pantry" id="pantry" aria-label="Inventory" data-i18n-aria="inventory">
       <div class="pantry-head">
-        <span class="pantry-title">Pantry</span>
-        <button class="icon-btn" id="editToggle" aria-pressed="false" aria-label="Edit pantry">
+        <span class="pantry-title" data-i18n="pantry">Pantry</span>
+        <button class="icon-btn" id="editToggle" aria-pressed="false" aria-label="Edit pantry" data-i18n-aria="editPantry">
           <svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>
         </button>
       </div>
       <div class="pantry-scroll" id="categories"></div>
-      <p class="pantry-hint">Tap or drag to add</p>
+      <p class="pantry-hint" data-i18n="hint">Tap or drag to add</p>
     </aside>
 
     <!-- List (right) -->
-    <main class="board" id="board" aria-label="Shopping list">
+    <main class="board" id="board" aria-label="Shopping list" data-i18n-aria="shoppingList">
       <header class="board-head">
-        <button class="list-title" id="listTitle" aria-label="Rename list">
+        <button class="icon-btn settings-btn" id="settingsBtn" aria-label="Settings" data-i18n-aria="settings">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+        </button>
+        <button class="list-title" id="listTitle" aria-label="Rename list" data-i18n-aria="renameList">
           <span id="listName">My list</span>
-          <span class="dirty-dot" id="dirtyDot" title="Unsaved changes"></span>
+          <span class="dirty-dot" id="dirtyDot" title="Unsaved changes" data-i18n-title="unsaved"></span>
         </button>
         <p class="list-meta" id="listMeta">0 items</p>
       </header>
@@ -47,27 +50,27 @@
           <path class="basket-body" d="M16 44h88l-9 40a8 8 0 0 1-8 6H33a8 8 0 0 1-8-6Z" />
           <path class="basket-weave" d="M40 56v22M60 56v22M80 56v22" />
         </svg>
-        <p>Your basket is empty.<br /><span>Drag something in from the pantry.</span></p>
+        <p><span class="empty-title" data-i18n="emptyTitle">Your basket is empty.</span><br /><span data-i18n="emptySub">Drag something in from the pantry.</span></p>
       </div>
 
       <div class="drop-glow" aria-hidden="true"></div>
 
-      <nav class="actions" aria-label="List actions">
+      <nav class="actions" aria-label="List actions" data-i18n-aria="listActions">
         <button class="act" id="btnClear">
           <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
-          <span>Clear</span>
+          <span data-i18n="clear">Clear</span>
         </button>
         <button class="act act-primary" id="btnSave">
           <svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5Z"/><path d="M8 4v5h7V4"/><path d="M8 20v-6h8v6"/></svg>
-          <span>Save</span>
+          <span data-i18n="save">Save</span>
         </button>
         <button class="act" id="btnLoad">
           <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>
-          <span>Load</span>
+          <span data-i18n="load">Load</span>
         </button>
         <button class="act act-danger" id="btnDelete">
           <svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>
-          <span>Delete</span>
+          <span data-i18n="delete">Delete</span>
         </button>
       </nav>
     </main>
@@ -82,6 +85,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
