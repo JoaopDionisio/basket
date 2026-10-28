@@ -153,10 +153,14 @@
   window.addEventListener("pointermove", e => {
     if (!drag || e.pointerId !== drag.pointerId) return;
     drag.x = e.clientX; drag.y = e.clientY;
-    const moved = Math.hypot(drag.x - drag.sx, drag.y - drag.sy) > MOVE_TOL;
+    const dx = drag.x - drag.sx, dy = drag.y - drag.sy;
+    const moved = Math.hypot(dx, dy) > MOVE_TOL;
     if (!drag.active) {
-      if (moved && drag.touch) { cancelDrag(); return; }   // finger moved early → it's a scroll
-      if (moved && !drag.touch) beginDrag();
+      if (!moved) return;
+      // Touch: a sideways swipe picks the item up; an up/down swipe scrolls the pantry.
+      if (drag.touch && Math.abs(dy) > Math.abs(dx)) { cancelDrag(); return; }
+      clearTimeout(drag.timer);
+      beginDrag();
       return;
     }
     moveGhost();
@@ -167,9 +171,9 @@
     if (!drag || e.pointerId !== drag.pointerId) return;
     const d = drag;
     clearTimeout(d.timer);
-    if (!d.active) {                               // simple tap → add
+    if (!d.active) {                               // simple tap → remind that items are dragged
       drag = null;
-      addFromChip(d.chip, true);
+      nudge(d.chip);
       return;
     }
     if (overBoard()) {
@@ -239,6 +243,12 @@
     ghost.classList.add("fly");
     requestAnimationFrame(() => { ghost.style.transform = `translate(${r.left}px, ${r.top}px)`; });
     setTimeout(() => ghost.remove(), 460);
+  }
+
+  let nudgeHinted = false;
+  function nudge(chip) {
+    chip.classList.remove("nudge"); void chip.offsetWidth; chip.classList.add("nudge");
+    if (!nudgeHinted) { nudgeHinted = true; toast("Drag it into your list →"); }
   }
 
   function addFromChip(chip, animate) {
