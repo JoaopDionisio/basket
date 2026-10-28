@@ -241,8 +241,10 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
   position: fixed; left: 0; top: 0; z-index: 50; pointer-events: none;
   box-shadow: var(--shadow-lift); border-color: var(--accent);
   transform-origin: center; will-change: transform;
+  transition: none; /* must track the finger exactly; .chip's transform transition made it lag */
 }
-.fly { position: fixed; z-index: 50; pointer-events: none; transition: transform .45s cubic-bezier(.5,0,.3,1), opacity .45s; }
+.ghost.fly, .fly { position: fixed; z-index: 50; pointer-events: none; transition: transform .45s cubic-bezier(.5,0,.3,1), opacity .45s; }
+body.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbing; }
 
 /* ---------- Sheet ---------- */
 .sheet-backdrop {

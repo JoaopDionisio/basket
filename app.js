@@ -187,8 +187,15 @@
   });
   window.addEventListener("pointercancel", () => drag && cancelDrag());
 
-  // Once a long-press drag starts, stop the page from scrolling under the finger.
-  document.addEventListener("touchmove", e => { if (drag && drag.active) e.preventDefault(); }, { passive: false });
+  // Keep the browser from starting a scroll during a drag (or a sideways swipe that's about to become one),
+  // otherwise it cancels the pointer and the item gets dropped mid-air.
+  document.addEventListener("touchmove", e => {
+    if (!drag) return;
+    const t = e.touches[0];
+    const dx = t ? t.clientX - drag.sx : 0, dy = t ? t.clientY - drag.sy : 0;
+    const sideways = Math.hypot(dx, dy) > 4 && Math.abs(dx) > Math.abs(dy);
+    if (drag.active || sideways) e.preventDefault();
+  }, { passive: false });
   catsEl.addEventListener("contextmenu", e => { if (e.target.closest(".chip")) e.preventDefault(); });
   // Keyboard users: Enter/Space on a chip adds it (pointer taps are handled on pointerup).
   catsEl.addEventListener("click", e => {
@@ -208,6 +215,7 @@
     drag.ghost = ghost;
     chip.classList.add("picked");
     board.classList.add("dragging");
+    document.body.classList.add("is-dragging");
     if (navigator.vibrate) navigator.vibrate(8);
     moveGhost();
   }
@@ -222,6 +230,7 @@
   function endDragUi(d) {
     d.chip.classList.remove("picked");
     board.classList.remove("dragging", "drag-over");
+    document.body.classList.remove("is-dragging");
   }
   function cancelDrag() {
     clearTimeout(drag.timer);
@@ -232,6 +241,7 @@
     if (!target) { ghost.remove(); return; }
     const t = target.getBoundingClientRect();
     ghost.classList.add("fly");
+    void ghost.offsetWidth;                        // lock in the start position so the flight animates
     requestAnimationFrame(() => {
       ghost.style.transform = `translate(${t.left + 10}px, ${t.top + 6}px) scale(.9)`;
       ghost.style.opacity = "0";
@@ -269,7 +279,8 @@
     markDirty();
     renderList(key);
     const el = itemsEl.querySelector(`[data-key="${CSS.escape(key)}"]`);
-    if (el) el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    // Instant scroll, so the flying copy aims at where the item really ends up.
+    if (el) el.scrollIntoView({ block: "nearest" });
     return el;
   }
 
