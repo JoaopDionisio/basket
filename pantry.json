@@ -19,7 +19,12 @@
         { "id": "rice", "emoji": "🍚", "name": { "en": "Rice", "pt": "Arroz" } },
         { "id": "pasta", "emoji": "🍝", "name": { "en": "Pasta", "pt": "Massa" } },
         { "id": "onions", "emoji": "🧅", "name": { "en": "Onions", "pt": "Cebolas" } },
-        { "id": "avocado", "emoji": "🥑", "name": { "en": "Avocado", "pt": "Abacate" } }
+        { "id": "avocado", "emoji": "🥑", "name": { "en": "Avocado", "pt": "Abacate" } },
+        { "id": "chocapic", "emoji": "🥣", "name": { "en": "Chocapic", "pt": "Chocapic" } },
+        { "id": "muesli", "emoji": "🌾", "name": { "en": "Muesli", "pt": "Muesli" } },
+        { "id": "fruit yoghurt", "emoji": "🍓", "name": { "en": "Fruit yoghurt", "pt": "Iogurte com pedaços" } },
+        { "id": "peanut butter", "emoji": "🥜", "name": { "en": "Peanut butter", "pt": "Manteiga de amendoim" } },
+        { "id": "biscuits", "emoji": "🍪", "name": { "en": "Biscuits", "pt": "Bolachas" } }
       ]
     },
     {
